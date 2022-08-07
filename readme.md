@@ -26,11 +26,11 @@ print(lcs2(doc[:4]))  # [[':'], ['on'], ['Software']]
 
 
 ## inspired by 
-参照：https://www.cnblogs.com/shld/p/10444808.html
-讲解：https://www.cnblogs.com/zjp-shadow/p/9218214.html
-详解：https://www.cnblogs.com/1625--H/p/12416198.html
-证明：https://oi-wiki.org/string/sam/
-题解：https://www.cnblogs.com/Lyush/archive/2013/08/25/3281546.html https://www.cnblogs.com/mollnn/p/13175736.html
+    参照：https://www.cnblogs.com/shld/p/10444808.html
+    讲解：https://www.cnblogs.com/zjp-shadow/p/9218214.html
+    详解：https://www.cnblogs.com/1625--H/p/12416198.html
+    证明：https://oi-wiki.org/string/sam/
+    题解：https://www.cnblogs.com/Lyush/archive/2013/08/25/3281546.html https://www.cnblogs.com/mollnn/p/13175736.html
 
 ## feature
 * suffix automaton by words 分词后缀自动机
