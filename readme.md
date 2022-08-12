@@ -15,14 +15,29 @@ raw = """
 doc = raw.splitlines()
 doc = [x for x in doc if x]
 doc = [x.split() for x in doc]
-
+# tokenize in words
 
 from SuffixAutomaton import SuffixAutomaton,lcs1,lcs2
-print(lcs1(doc[1], doc[2]))  # [['Software', 'Engineering']]
-print(lcs2(doc[:4]))  # [[':'], ['on'], ['Software']]
+# longest
+print(lcs1(doc[1], doc[2]))  # [(['Software', 'Engineering'], 14)]
+print(lcs2(doc[0], doc[1:4]))  # [([':'], 1), (['on'], 4), (['Software'], 6)]
 
+
+poet = "江天一色无纤尘皎皎空中孤月轮 江畔何人初见月江月何年初照人 人生代代无穷已江月年年望相似 不知江月待何人但见长江送流水"
+doc = poet.split()
+# tokenize in chars
+# all common substrings
+# [(['人'], 13), (['江'], 0), (['江', '月'], 7), (['年'], 10)]
+print(lcs1(doc[1], doc[2], 1))
+# [(['人'], 0), (['江', '月'], 7)]
+print(lcs2(doc[2], doc[2:4], 1))
 
 ```
+
+## feature
+* suffix automaton [in words] 可分词后缀自动机
+* [Longest] Common Substring of two lines 两文[最长]共串
+* [Longest] Common Substring of document 多文[最长]共串
 
 
 ## inspired by 
@@ -31,8 +46,3 @@ print(lcs2(doc[:4]))  # [[':'], ['on'], ['Software']]
     详解：https://www.cnblogs.com/1625--H/p/12416198.html
     证明：https://oi-wiki.org/string/sam/
     题解：https://www.cnblogs.com/Lyush/archive/2013/08/25/3281546.html https://www.cnblogs.com/mollnn/p/13175736.html
-
-## feature
-* suffix automaton by words 分词后缀自动机
-* Longest Common Substring of two lines 两文最长共串
-* Longest Common Substring of document 多文最长共串

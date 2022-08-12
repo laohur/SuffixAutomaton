@@ -76,8 +76,6 @@ class SuffixAutomaton:
                 self.size += 1
                 nodes[clone] = State(position=position, length=nodes[p].length+1,
                                      next=copy.deepcopy(nodes[q].next), link=nodes[q].link)
-                # nodes[clone] = State(position=position, length=nodes[p].length+1,
-                #                      next={k: v for k, v in nodes[q].next.items()}, link=nodes[q].link)
                 logger.debug(f"新状态{self.size}的长度为状态{p}的长度加1")
                 # 搜索状态p，若c转移为q，则指向新状态，并搜索后缀链接的状态重复指向新状态 直到状态转移不为q，跳出
                 while p != -1 and nodes[p].next[token] == q:
@@ -116,7 +114,7 @@ class SuffixAutomaton:
         return t, start
 
 
-def sam_lcs1(sam: SuffixAutomaton, t: List[str]):
+def sam_lcs1(sam: SuffixAutomaton, t: List[str], min_len: int):
     p = 0  # 当前节点
     length = 0  # 当前
     longest = 0  # 全局
@@ -134,19 +132,26 @@ def sam_lcs1(sam: SuffixAutomaton, t: List[str]):
             else:  # 止步
                 length = sam.nodes[p].length+1
                 p = sam.nodes[p].next[x]
-        if length >= longest and length > 0:
-            longest = length
+        if length > 0:
+            longest = max(longest, length)
             endpos = p
             cands.append((endpos, length))
+    if min_len <= 0:
+        min_len = max(1, longest)
+    ans = []
+    for endpos, length in cands:
+        if length >= min_len:
+            (t, start) = sam.sub_seq(endpos, length)
+            if ans and ans[-1][1] == start:
+                ans[-1] = (t, start)
+            else:
+                ans.append((t, start))
+    return ans
 
-    ans = [x for x in cands if x[1] == longest and x[1] > 0]
-    re = [sam.sub_seq(endpos, length) for endpos, length in ans]
-    return re
 
-
-def lcs1(s: List[str], t: List[str]):
+def lcs1(s: List[str], t: List[str], min_len: int = -1):
     sam = SuffixAutomaton(s)
-    re = sam_lcs1(sam, t)
+    re = sam_lcs1(sam, t, min_len)
     return re
 
 
@@ -178,7 +183,7 @@ def match(sam, t, result, lengths):
     return result, lengths
 
 
-def sam_lcs2(sam: SuffixAutomaton, doc: List[List[str]]):
+def sam_lcs2(sam: SuffixAutomaton, doc: List[List[str]], min_len: int = -1):
     # 计数排序 https://www.cnblogs.com/xiaochuan94/p/11198610.html
     # 按照可能匹配串的长度降序，匹配成功向上传递，用以优化效率
     # count = [0]*(len(sam.sequence)+1)
@@ -195,14 +200,22 @@ def sam_lcs2(sam: SuffixAutomaton, doc: List[List[str]]):
     for t in doc:
         result, lengths = match(sam, t, result, lengths)
     longest = max(lengths)
-    ans = [(i, x) for i, x in enumerate(lengths) if x == longest and x > 0]
-    re = [sam.sub_seq(endpos, length) for endpos, length in ans]
-    return re
+    if min_len <= 0:
+        min_len = max(1, longest)
+    ans = []
+    for endpos, length in enumerate(lengths):
+        if length >= min_len:
+            (t, start) = sam.sub_seq(endpos, length)
+            if ans and ans[-1][1] == start:
+                ans[-1] = (t, start)
+            else:
+                ans.append((t, start))
+    return ans
 
 
-def lcs2(query: List[str], doc: List[List[str]]):
+def lcs2(query: List[str], doc: List[List[str]], min_len: int = -1):
     sam = SuffixAutomaton(query)
-    re = sam_lcs2(sam, doc)
+    re = sam_lcs2(sam, doc, min_len)
     return re
 
 
@@ -228,7 +241,20 @@ if __name__ == "__main__":
     # sam2 = SAM(s2)
     # print(sam2)
     # print(sam_lcs1(sam1, s2))
-    print(lcs1(doc[1], doc[2]))  # [(['Software', 'Engineering'], 14)]
-    # print(sam_lcs2(sam1, doc[2:4]))
+
+    # [(['Software', 'Engineering'], 14)]
+    print(lcs1(doc[1], doc[2]))
     # [([':'], 1), (['on'], 4), (['Software'], 6)]
     print(lcs2(doc[0], doc[1:4]))
+
+    # [([':'], 1), (['Conference'], 7), (['on'], 10), (['Software', 'Engineering'], 14)]
+    print(lcs1(doc[1], doc[2], 1))
+    # [([':'], 1), (['on'], 4), (['Software'], 6)]
+    print(lcs2(doc[0], doc[1:4], 1))
+
+    poet = "江天一色无纤尘皎皎空中孤月轮 江畔何人初见月江月何年初照人 人生代代无穷已江月年年望相似 不知江月待何人但见长江送流水"
+    doc = poet.split()
+    # [(['人'], 13), (['江'], 0), (['江', '月'], 7), (['年'], 10)]
+    print(lcs1(doc[1], doc[2], 1))
+    # [(['人'], 0), (['江', '月'], 7)]
+    print(lcs2(doc[2], doc[2:4], 1))
