@@ -113,7 +113,7 @@ class SuffixAutomaton:
         pos = self.nodes[endpos].position
         start = pos+1-length
         t = self.sequence[start: pos+1]
-        return t
+        return t, start
 
 
 def sam_lcs1(sam: SuffixAutomaton, t: List[str]):
@@ -141,7 +141,6 @@ def sam_lcs1(sam: SuffixAutomaton, t: List[str]):
 
     ans = [x for x in cands if x[1] == longest and x[1] > 0]
     re = [sam.sub_seq(endpos, length) for endpos, length in ans]
-    re = [x for x in re if x]
     return re
 
 
@@ -198,18 +197,12 @@ def sam_lcs2(sam: SuffixAutomaton, doc: List[List[str]]):
     longest = max(lengths)
     ans = [(i, x) for i, x in enumerate(lengths) if x == longest and x > 0]
     re = [sam.sub_seq(endpos, length) for endpos, length in ans]
-    re = [x for x in re if x]
     return re
 
 
-def lcs2(doc: List[List[str]]):
-    short = 0
-    for i in range(1, len(doc)):
-        if len(doc[i]) < len(doc[short]):
-            short = i
-    sam = SuffixAutomaton(doc[short])
-    doc1 = [x for i, x in enumerate(doc) if i != short]
-    re = sam_lcs2(sam, doc1)
+def lcs2(query: List[str], doc: List[List[str]]):
+    sam = SuffixAutomaton(query)
+    re = sam_lcs2(sam, doc)
     return re
 
 
@@ -235,6 +228,7 @@ if __name__ == "__main__":
     # sam2 = SAM(s2)
     # print(sam2)
     # print(sam_lcs1(sam1, s2))
-    print(lcs1(doc[1], doc[2]))  # [['Software', 'Engineering']]
+    print(lcs1(doc[1], doc[2]))  # [(['Software', 'Engineering'], 14)]
     # print(sam_lcs2(sam1, doc[2:4]))
-    print(lcs2(doc[:4]))  # [[':'], ['on'], ['Software']]
+    # [([':'], 1), (['on'], 4), (['Software'], 6)]
+    print(lcs2(doc[0], doc[1:4]))
