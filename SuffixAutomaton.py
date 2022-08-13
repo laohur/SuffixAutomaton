@@ -1,3 +1,4 @@
+import math
 import collections
 import copy
 from typing import List, Dict, OrderedDict
@@ -119,7 +120,7 @@ def sam_lcs1(sam: SuffixAutomaton, t: List[str], min_len: int):
     length = 0  # 当前
     longest = 0  # 全局
     cands = []  # 候选
-    for x in t:
+    for i, x in enumerate(t):
         if x in sam.nodes[p].next:  # 匹配
             p = sam.nodes[p].next[x]
             length += 1
@@ -135,17 +136,18 @@ def sam_lcs1(sam: SuffixAutomaton, t: List[str], min_len: int):
         if length > 0:
             longest = max(longest, length)
             endpos = p
-            cands.append((endpos, length))
+            cand_start = i
+            cands.append((endpos, length, cand_start))
     if min_len <= 0:
         min_len = max(1, longest)
     ans = []
-    for endpos, length in cands:
+    for endpos, length, cand_start in cands:
         if length >= min_len:
             (t, start) = sam.sub_seq(endpos, length)
             if ans and ans[-1][1] == start:
-                ans[-1] = (t, start)
+                ans[-1] = (t, start, cand_start)
             else:
-                ans.append((t, start))
+                ans.append((t, start, cand_start))
     return ans
 
 
@@ -219,6 +221,34 @@ def lcs2(query: List[str], doc: List[List[str]], min_len: int = -1):
     return re
 
 
+def getChangEntropy(line: str):
+    ce = sum(math.log(128+ord(x)+i) for i, x in enumerate(line))
+    # l = math.log1p(len(line))
+    return ce
+
+
+def getSquareLength(s: list[str]):
+    lens = [len(x) for x in s]
+    len1 = sum(x for x in lens)
+    len2 = sum(x*x for x in lens)
+    len2 = sum(len(x)*len(x) for x in s)
+    length = math.sqrt(len2/len(s))
+    return length
+
+
+def getChangSimilarity(s: list[str], t: list[str]):
+    commons = lcs1(s, t, 1)
+    c = [''.join(x[0]) for x in commons]
+    che_s = sum(getChangEntropy(x)
+                for x in s)  # * math.log1p(getSquareLength(s))
+    che_t = sum(getChangEntropy(x)
+                for x in t)  # * math.log1p(getSquareLength(t))
+    che_c = sum(getChangEntropy(x)
+                for x in c)  # * math.log1p(getSquareLength(c))
+    similarity = che_c/math.sqrt(che_s*che_t)
+    return similarity
+
+
 if __name__ == "__main__":
     # http://123.57.137.208/ccf/ccf-4.jsp
     raw = """
@@ -242,19 +272,22 @@ if __name__ == "__main__":
     # print(sam2)
     # print(sam_lcs1(sam1, s2))
 
-    # [(['Software', 'Engineering'], 14)]
+    # [(['Software', 'Engineering'], 14, 6)]
     print(lcs1(doc[1], doc[2]))
     # [([':'], 1), (['on'], 4), (['Software'], 6)]
     print(lcs2(doc[0], doc[1:4]))
+    # print(getChangSimilarity(doc[1], doc[2]))
 
-    # [([':'], 1), (['Conference'], 7), (['on'], 10), (['Software', 'Engineering'], 14)]
+    # [([':'], 1, 1), (['Conference'], 7, 3), (['on'], 10, 4), (['Software', 'Engineering'], 14, 6)]
     print(lcs1(doc[1], doc[2], 1))
     # [([':'], 1), (['on'], 4), (['Software'], 6)]
     print(lcs2(doc[0], doc[1:4], 1))
 
     poet = "江天一色无纤尘皎皎空中孤月轮 江畔何人初见月江月何年初照人 人生代代无穷已江月年年望相似 不知江月待何人但见长江送流水"
     doc = poet.split()
-    # [(['江'], 0), (['江', '月'], 7), (['何'], 9), (['何', '人'], 2), (['见'], 5), (['江'], 0)]
+    # [(['江'], 0, 2), (['江', '月'], 7, 3), (['何'], 9, 5), (['何', '人'], 2, 6), (['见'], 5, 8), (['江'], 0, 10)]
     print(lcs1(doc[1], doc[3], 1))
     # [(['人'], 0), (['江', '月'], 7)]
     print(lcs2(doc[2], doc[2:4], 1))
+    # print(getChangSimilarity(doc[1], doc[3]))
+    # print(getChangSimilarity("梦幻西游", "梦幻西游手游"))
