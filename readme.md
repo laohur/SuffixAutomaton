@@ -15,20 +15,21 @@ raw = """
 doc = raw.splitlines()
 doc = [x for x in doc if x]
 doc = [x.split() for x in doc]
-# tokenize in words
 
 from SuffixAutomaton import SuffixAutomaton,lcs1,lcs2
+# tokenize in words
 # longest
-print(lcs1(doc[1], doc[2]))  # [(['Software', 'Engineering'], 14)]
-print(lcs2(doc[0], doc[1:4]))  # [([':'], 1), (['on'], 4), (['Software'], 6)]
+# [(['Software', 'Engineering'], 14, 6)]
+print(lcs1(doc[1], doc[2]))
+# [([':'], 1), (['on'], 4), (['Software'], 6)]
+print(lcs2(doc[0], doc[1:4]))
 
-
-poet = "江天一色无纤尘皎皎空中孤月轮 江畔何人初见月江月何年初照人 人生代代无穷已江月年年望相似 不知江月待何人但见长江送流水"
-doc = poet.split()
 # tokenize in chars
 # all common substrings
-# [(['江'], 0), (['江', '月'], 7), (['何'], 9), (['何', '人'], 2), (['见'], 5), (['江'], 0)]
-print(lcs1(doc[1], doc[2], 1))
+poet = "江天一色无纤尘皎皎空中孤月轮 江畔何人初见月江月何年初照人 人生代代无穷已江月年年望相似 不知江月待何人但见长江送流水"
+doc = poet.split()
+# [(['江'], 0, 2), (['江', '月'], 7, 3), (['何'], 9, 5), (['何', '人'], 2, 6), (['见'], 5, 8), (['江'], 0, 10)]
+print(lcs1(doc[1], doc[3], 1))
 # [(['人'], 0), (['江', '月'], 7)]
 print(lcs2(doc[2], doc[2:4], 1))
 

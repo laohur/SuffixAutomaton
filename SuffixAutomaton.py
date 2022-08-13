@@ -220,35 +220,6 @@ def lcs2(query: List[str], doc: List[List[str]], min_len: int = -1):
     re = sam_lcs2(sam, doc, min_len)
     return re
 
-
-def getChangEntropy(line: str):
-    ce = sum(math.log(128+ord(x)+i) for i, x in enumerate(line))
-    # l = math.log1p(len(line))
-    return ce
-
-
-def getSquareLength(s: list[str]):
-    lens = [len(x) for x in s]
-    len1 = sum(x for x in lens)
-    len2 = sum(x*x for x in lens)
-    len2 = sum(len(x)*len(x) for x in s)
-    length = math.sqrt(len2/len(s))
-    return length
-
-
-def getChangSimilarity(s: list[str], t: list[str]):
-    commons = lcs1(s, t, 1)
-    c = [''.join(x[0]) for x in commons]
-    che_s = sum(getChangEntropy(x)
-                for x in s)  # * math.log1p(getSquareLength(s))
-    che_t = sum(getChangEntropy(x)
-                for x in t)  # * math.log1p(getSquareLength(t))
-    che_c = sum(getChangEntropy(x)
-                for x in c)  # * math.log1p(getSquareLength(c))
-    similarity = che_c/math.sqrt(che_s*che_t)
-    return similarity
-
-
 if __name__ == "__main__":
     # http://123.57.137.208/ccf/ccf-4.jsp
     raw = """
@@ -276,7 +247,6 @@ if __name__ == "__main__":
     print(lcs1(doc[1], doc[2]))
     # [([':'], 1), (['on'], 4), (['Software'], 6)]
     print(lcs2(doc[0], doc[1:4]))
-    # print(getChangSimilarity(doc[1], doc[2]))
 
     # [([':'], 1, 1), (['Conference'], 7, 3), (['on'], 10, 4), (['Software', 'Engineering'], 14, 6)]
     print(lcs1(doc[1], doc[2], 1))
@@ -289,5 +259,3 @@ if __name__ == "__main__":
     print(lcs1(doc[1], doc[3], 1))
     # [(['人'], 0), (['江', '月'], 7)]
     print(lcs2(doc[2], doc[2:4], 1))
-    # print(getChangSimilarity(doc[1], doc[3]))
-    # print(getChangSimilarity("梦幻西游", "梦幻西游手游"))
