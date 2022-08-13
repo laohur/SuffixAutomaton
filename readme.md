@@ -23,6 +23,7 @@ from SuffixAutomaton import SuffixAutomaton,lcs1,lcs2
 print(lcs1(doc[1], doc[2]))
 # [([':'], 1), (['on'], 4), (['Software'], 6)]
 print(lcs2(doc[0], doc[1:4]))
+print(getSimularity(doc[1], doc[2]))  # 0.4276697619476603
 
 # tokenize in chars
 # all common substrings
@@ -32,6 +33,7 @@ doc = poet.split()
 print(lcs1(doc[1], doc[3], 1))
 # [(['人'], 0), (['江', '月'], 7)]
 print(lcs2(doc[2], doc[2:4], 1))
+print(getSimularity(doc[1], doc[3]))  # 0.38818418884370554
 
 ```
 

@@ -119,9 +119,10 @@ def sam_lcs1(sam: SuffixAutomaton, t: List[str], min_len: int):
     p = 0  # 当前节点
     length = 0  # 当前
     longest = 0  # 全局
-    cands = []  # 候选
+    cands = [None]*len(sam.nodes)  # 候选
     for i, x in enumerate(t):
         if x in sam.nodes[p].next:  # 匹配
+            cands[p] = None
             p = sam.nodes[p].next[x]
             length += 1
         else:  # 失配
@@ -132,14 +133,18 @@ def sam_lcs1(sam: SuffixAutomaton, t: List[str], min_len: int):
                 length = 0
             else:  # 止步
                 length = sam.nodes[p].length+1
+                cands[p] = None
                 p = sam.nodes[p].next[x]
         if length > 0:
             longest = max(longest, length)
             endpos = p
-            cand_start = i
-            cands.append((endpos, length, cand_start))
+            cand_start = i-length+1
+            if cands[p] and cands[p][1]>=length:
+                continue
+            cands[p]=(endpos, length, cand_start)
     if min_len <= 0:
         min_len = max(1, longest)
+    cands = [x for x in cands if x]
     ans = []
     for endpos, length, cand_start in cands:
         if length >= min_len:
@@ -262,7 +267,7 @@ def getSimularity(s: list[str], t: list[str]):
     che_c = sum(countTerm(x) for x in c)
 
     cheCover = che_c/math.sqrt(che_s*che_t)
-    simularity = 0.9*cheCover+0.1*lengthCover
+    simularity = 0.8*cheCover+0.2*lengthCover
     return simularity
 
 
@@ -291,7 +296,7 @@ if __name__ == "__main__":
 
     # [(['Software', 'Engineering'], 14, 6)]
     print(lcs1(doc[1], doc[2]))
-    print(getSimularity(doc[1], doc[2]))  # 0.26031165535366896
+    print(getSimularity(doc[1], doc[2]))  # 0.4276697619476603
     # [([':'], 1), (['on'], 4), (['Software'], 6)]
     print(lcs2(doc[0], doc[1:4]))
 
@@ -302,15 +307,15 @@ if __name__ == "__main__":
 
     poet = "江天一色无纤尘皎皎空中孤月轮 江畔何人初见月江月何年初照人 人生代代无穷已江月年年望相似 不知江月待何人但见长江送流水"
     doc = poet.split()
-    # [(['江', '月'], 7, 3), (['何', '人'], 2, 6)]
+    # [(['何', '人'], 2, 6), (['江', '月'], 7, 3)]
     print(lcs1(doc[1], doc[3]))
-    print(getSimularity(doc[1], doc[3]))  # 0.8179088576895382
+    print(getSimularity(doc[1], doc[3]))  # 0.38818418884370554
     # [(['江', '月'], 7)]
     print(lcs2(doc[2], doc[2:4]))
 
-    # [(['江'], 0, 2), (['江', '月'], 7, 3), (['何'], 9, 5), (['何', '人'], 2, 6), (['见'], 5, 8), (['江'], 0, 10)]
+    # [(['江'], 0, 10), (['何', '人'], 2, 6), (['见'], 5, 8), (['江', '月'], 7, 3)]
     print(lcs1(doc[1], doc[3], 1))
     # [(['人'], 0), (['江', '月'], 7)]
     print(lcs2(doc[2], doc[2:4], 1))
 
-    print(getSimularity("大话西游", "大话西游手游"))  # 0.8179088576895382
+    print(getSimularity("大话西游", "大话西游手游"))  # 0.817751938049337
