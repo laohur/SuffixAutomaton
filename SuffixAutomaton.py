@@ -220,6 +220,52 @@ def lcs2(query: List[str], doc: List[List[str]], min_len: int = -1):
     re = sam_lcs2(sam, doc, min_len)
     return re
 
+
+def getChangEntropy(s: str):
+    che = sum(math.log(128+ord(x)) for x in s)
+    return che
+
+
+def countTerm(s: list[str]):
+    freq=collections.Counter(s)
+    che=0
+    for k,v in freq.items():
+        n=math.sqrt(v)
+        w=getChangEntropy(k)
+        che+=n*w
+    return w
+
+
+def getSimularity0(s: list[str], t: list[str]):
+    commons = lcs1(s, t,1)
+    len2 = sum(len(x[0])*len(x[0]) for x in commons)
+    lengthCover = math.sqrt(len2)/math.sqrt(len(s)*len(t))
+
+    c = [x for y in commons for x in y[0]]
+    che_s = sum(getChangEntropy(x) for x in s)
+    che_t = sum(getChangEntropy(x) for x in t)
+    che_c = sum(getChangEntropy(x) for x in c)
+
+    cheCover = che_c/math.sqrt(che_s*che_t)
+    simularity = 0.9*cheCover+0.1*lengthCover
+    return simularity
+
+
+def getSimularity(s: list[str], t: list[str]):
+    commons = lcs1(s, t,1)
+    len2 = sum(len(x[0])*len(x[0]) for x in commons)
+    lengthCover = math.sqrt(len2)/math.sqrt(len(s)*len(t))
+
+    c = [ x for y in commons for x in y[0]]
+    che_s = sum(countTerm(x) for x in s)
+    che_t = sum(countTerm(x) for x in t)
+    che_c = sum(countTerm(x) for x in c)
+
+    cheCover = che_c/math.sqrt(che_s*che_t)
+    simularity = 0.9*cheCover+0.1*lengthCover
+    return simularity
+
+
 if __name__ == "__main__":
     # http://123.57.137.208/ccf/ccf-4.jsp
     raw = """
@@ -245,6 +291,7 @@ if __name__ == "__main__":
 
     # [(['Software', 'Engineering'], 14, 6)]
     print(lcs1(doc[1], doc[2]))
+    print(getSimularity(doc[1], doc[2]))  # 0.26031165535366896
     # [([':'], 1), (['on'], 4), (['Software'], 6)]
     print(lcs2(doc[0], doc[1:4]))
 
@@ -255,7 +302,15 @@ if __name__ == "__main__":
 
     poet = "江天一色无纤尘皎皎空中孤月轮 江畔何人初见月江月何年初照人 人生代代无穷已江月年年望相似 不知江月待何人但见长江送流水"
     doc = poet.split()
+    # [(['江', '月'], 7, 3), (['何', '人'], 2, 6)]
+    print(lcs1(doc[1], doc[3]))
+    print(getSimularity(doc[1], doc[3]))  # 0.8179088576895382
+    # [(['江', '月'], 7)]
+    print(lcs2(doc[2], doc[2:4]))
+
     # [(['江'], 0, 2), (['江', '月'], 7, 3), (['何'], 9, 5), (['何', '人'], 2, 6), (['见'], 5, 8), (['江'], 0, 10)]
     print(lcs1(doc[1], doc[3], 1))
     # [(['人'], 0), (['江', '月'], 7)]
     print(lcs2(doc[2], doc[2:4], 1))
+
+    print(getSimularity("大话西游", "大话西游手游"))  # 0.8179088576895382

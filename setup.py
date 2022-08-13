@@ -17,7 +17,7 @@ setup(
     name="SuffixAutomaton",
     # packages=find_packages(),
     py_modules=['SuffixAutomaton'],
-    version='0.0.1',
+    version='0.0.2',
     description='suffix automaton by words',
     long_description=long_description,
     long_description_content_type="text/markdown",
