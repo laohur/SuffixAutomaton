@@ -35,6 +35,8 @@ print(lcs1(doc[1], doc[3], 1))
 print(lcs2(doc[2], doc[2:4], 1))
 print(getSimularity(doc[1], doc[3]))  # 0.38818418884370554
 
+print(getSimularity("大话西游", "大话西游手游"))  # 0.817751938049337
+
 ```
 
 ## feature
@@ -49,4 +51,4 @@ print(getSimularity(doc[1], doc[3]))  # 0.38818418884370554
     详解：https://www.cnblogs.com/1625--H/p/12416198.html
     证明：https://oi-wiki.org/string/sam/
     题解：https://www.cnblogs.com/Lyush/archive/2013/08/25/3281546.html https://www.cnblogs.com/mollnn/p/13175736.html
-    相似度: https://www.cnblogs.com/huilixieqi/p/6493089.html
+    相似度: https://www.cnblogs.com/huilixieqi/p/6493089.html http://groups.di.unipi.it/~bozzo/The%20Harmonic%20Mean.htm
