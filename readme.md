@@ -1,6 +1,7 @@
 
 # SuffixAutomaton 后缀自动机
-suffix automaton by words
+suffix automaton by words, to get text common substrings and simularity
+
 
 ## usage
 > pip install SuffixAutomaton 
@@ -23,7 +24,7 @@ from SuffixAutomaton import SuffixAutomaton,lcs1,lcs2
 print(lcs1(doc[1], doc[2]))
 # [([':'], 1), (['on'], 4), (['Software'], 6)]
 print(lcs2(doc[0], doc[1:4]))
-print(getSimularity(doc[1], doc[2]))  # 0.4276697619476603
+print(getSimularity(doc[1], doc[2]))  # 0.3935519988390284
 
 # tokenize in chars
 # all common substrings
@@ -33,9 +34,9 @@ doc = poet.split()
 print(lcs1(doc[1], doc[3], 1))
 # [(['人'], 0), (['江', '月'], 7)]
 print(lcs2(doc[2], doc[2:4], 1))
-print(getSimularity(doc[1], doc[3]))  # 0.38818418884370554
+print(getSimularity(doc[1], doc[3]))  # 0.3884714952984324
 
-print(getSimularity("大话西游", "大话西游手游"))  # 0.817751938049337
+print(getSimularity("大话西游", "大话西游手游"))  # 0.8513286423569946
 
 ```
 
@@ -43,6 +44,7 @@ print(getSimularity("大话西游", "大话西游手游"))  # 0.817751938049337
 * suffix automaton [in words] 可分词后缀自动机
 * [Longest] Common Substring of two lines 两文[最长]共串
 * [Longest] Common Substring of document 多文[最长]共串
+* getSimularity by ChangEntropy 文本近似度计算
 
 
 ## inspired by 
