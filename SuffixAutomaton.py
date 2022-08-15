@@ -231,7 +231,7 @@ def getChangEntropy(s: str):
     return che
 
 
-def countTerm(s: list[str]):
+def countTerm(s: List[str]):
     freq = collections.Counter(s)
     che = 0
     for k, v in freq.items():
@@ -241,7 +241,7 @@ def countTerm(s: list[str]):
     return w
 
 
-def getSimularity(s: list[str], t: list[str],w_s:float=0.6,w_che=0.8):
+def getSimularity(s: List[str], t: List[str],w_s:float=0.6,w_che=0.8):
     commons = lcs1(s, t, 1)
     len2 = sum(len(x[0])*len(x[0]) for x in commons)
     lc1 = math.sqrt(len2)/len(s)
@@ -283,28 +283,28 @@ if __name__ == "__main__":
     # print(sam2)
     # print(sam_lcs1(sam1, s2))
 
-    # [(['Software', 'Engineering'], 14, 6)]
+    # [(['Software', 'Engineering'], 14, 5)]
     print(lcs1(doc[1], doc[2]))
-    print(getSimularity(doc[1], doc[2]))  # 0.3935519988390284
+    print(getSimularity(doc[1], doc[2]))  # 0.39355199883902836
     # [([':'], 1), (['on'], 4), (['Software'], 6)]
     print(lcs2(doc[0], doc[1:4]))
 
-    # [([':'], 1, 1), (['Conference'], 7, 3), (['on'], 10, 4), (['Software', 'Engineering'], 14, 6)]
+    # [([':'], 1, 1), (['Conference'], 7, 3), (['on'], 10, 4), (['Software', 'Engineering'], 14, 5)]
     print(lcs1(doc[1], doc[2], 1))
     # [([':'], 1), (['on'], 4), (['Software'], 6)]
     print(lcs2(doc[0], doc[1:4], 1))
 
     poet = "江天一色无纤尘皎皎空中孤月轮 江畔何人初见月江月何年初照人 人生代代无穷已江月年年望相似 不知江月待何人但见长江送流水"
     doc = poet.split()
-    # [(['何', '人'], 2, 6), (['江', '月'], 7, 3)]
+    # [(['何', '人'], 2, 5), (['江', '月'], 7, 2)]
     print(lcs1(doc[1], doc[3]))
     print(getSimularity(doc[1], doc[3]))  # 0.3884714952984324
     # [(['江', '月'], 7)]
     print(lcs2(doc[2], doc[2:4]))
 
-    # [(['江'], 0, 10), (['何', '人'], 2, 6), (['见'], 5, 8), (['江', '月'], 7, 3)]
+    # [(['江'], 0, 10), (['何', '人'], 2, 5), (['见'], 5, 8), (['江', '月'], 7, 2)]
     print(lcs1(doc[1], doc[3], 1))
     # [(['人'], 0), (['江', '月'], 7)]
     print(lcs2(doc[2], doc[2:4], 1))
 
-    print(getSimularity("大话西游", "大话西游手游"))  # 0.8513286423569946
+    print(getSimularity("大话西游", "大话西游手游"))  # 0.8513286423569945

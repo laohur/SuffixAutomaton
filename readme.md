@@ -20,23 +20,22 @@ doc = [x.split() for x in doc]
 from SuffixAutomaton import SuffixAutomaton,lcs1,lcs2
 # tokenize in words
 # longest
-# [(['Software', 'Engineering'], 14, 6)]
+# [(['Software', 'Engineering'], 14, 5)]
 print(lcs1(doc[1], doc[2]))
+print(getSimularity(doc[1], doc[2]))  # 0.39355199883902836
 # [([':'], 1), (['on'], 4), (['Software'], 6)]
 print(lcs2(doc[0], doc[1:4]))
-print(getSimularity(doc[1], doc[2]))  # 0.3935519988390284
 
 # tokenize in chars
 # all common substrings
 poet = "江天一色无纤尘皎皎空中孤月轮 江畔何人初见月江月何年初照人 人生代代无穷已江月年年望相似 不知江月待何人但见长江送流水"
 doc = poet.split()
-# [(['江'], 0, 2), (['江', '月'], 7, 3), (['何'], 9, 5), (['何', '人'], 2, 6), (['见'], 5, 8), (['江'], 0, 10)]
+# [(['江'], 0, 10), (['何', '人'], 2, 5), (['见'], 5, 8), (['江', '月'], 7, 2)]
 print(lcs1(doc[1], doc[3], 1))
 # [(['人'], 0), (['江', '月'], 7)]
 print(lcs2(doc[2], doc[2:4], 1))
-print(getSimularity(doc[1], doc[3]))  # 0.3884714952984324
+print(getSimularity("大话西游", "大话西游手游"))  # 0.8513286423569945
 
-print(getSimularity("大话西游", "大话西游手游"))  # 0.8513286423569946
 
 ```
 
