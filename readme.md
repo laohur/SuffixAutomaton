@@ -1,6 +1,6 @@
 
 # SuffixAutomaton 后缀自动机
-suffix automaton by words, to get text common substrings and simularity
+suffix automaton by words, to get text common substrings
 
 
 ## usage
