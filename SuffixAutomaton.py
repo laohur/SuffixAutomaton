@@ -4,7 +4,7 @@ import copy
 from typing import List, Dict, OrderedDict
 
 import logging
-logger = logging.getLogger("sam")
+logger = logging.getLogger("SuffixAutomaton")
 logger.propagate = False
 logger.handlers.clear()
 logger.setLevel(level=logging.INFO)
@@ -28,8 +28,9 @@ class State:
 
 
 class SuffixAutomaton:
-    def __init__(self, line: List) -> None:
-        self.sequence = [x for x in line if x]
+    def __init__(self, line: List[str]) -> None:
+        # self.sequence = [x for x in line if x]
+        self.sequence = line
         self.last = 0
         self.size = 1
         nodes = [None for _ in range(2*len(self.sequence)+3)]
