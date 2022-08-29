@@ -22,7 +22,6 @@ from SuffixAutomaton import SuffixAutomaton,lcs1,lcs2
 # longest
 # [(['Software', 'Engineering'], 14, 5)]
 print(lcs1(doc[1], doc[2]))
-print(getSimularity(doc[1], doc[2]))  # 0.39355199883902836
 # [([':'], 1), (['on'], 4), (['Software'], 6)]
 print(lcs2(doc[0], doc[1:4]))
 
@@ -34,7 +33,6 @@ doc = poet.split()
 print(lcs1(doc[1], doc[3], 1))
 # [(['人'], 0), (['江', '月'], 7)]
 print(lcs2(doc[2], doc[2:4], 1))
-print(getSimularity("大话西游", "大话西游手游"))  # 0.8513286423569945
 
 
 ```
@@ -43,7 +41,6 @@ print(getSimularity("大话西游", "大话西游手游"))  # 0.8513286423569945
 * suffix automaton [in words] 可分词后缀自动机
 * [Longest] Common Substring of two lines 两文[最长]共串
 * [Longest] Common Substring of document 多文[最长]共串
-* getSimularity by ChangEntropy 文本近似度计算
 
 
 ## inspired by 

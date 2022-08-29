@@ -149,7 +149,7 @@ def sam_lcs1(sam: SuffixAutomaton, t: List[str], min_len: int):
     for endpos, length, cand_start in cands:
         if length >= min_len:
             (t, start) = sam.sub_seq(endpos, length)
-            if ans and ans[-1][1] == start:
+            if ans and start<=ans[-1][1]:
                 ans[-1] = (t, start, cand_start)
             else:
                 ans.append((t, start, cand_start))
@@ -213,7 +213,7 @@ def sam_lcs2(sam: SuffixAutomaton, doc: List[List[str]], min_len: int = -1):
     for endpos, length in enumerate(lengths):
         if length >= min_len:
             (t, start) = sam.sub_seq(endpos, length)
-            if ans and ans[-1][1] == start:
+            if ans and start<=ans[-1][1]:
                 ans[-1] = (t, start)
             else:
                 ans.append((t, start))
@@ -224,40 +224,6 @@ def lcs2(query: List[str], doc: List[List[str]], min_len: int = -1):
     sam = SuffixAutomaton(query)
     re = sam_lcs2(sam, doc, min_len)
     return re
-
-
-def getChangEntropy(s: str):
-    che = sum(math.log(128+ord(x)) for x in s)
-    return che
-
-
-def countTerm(s: List[str]):
-    freq = collections.Counter(s)
-    che = 0
-    for k, v in freq.items():
-        n = math.sqrt(v)
-        w = getChangEntropy(k)
-        che += n*w
-    return w
-
-
-def getSimularity(s: List[str], t: List[str],w_s:float=0.6,w_che=0.8):
-    commons = lcs1(s, t, 1)
-    len2 = sum(len(x[0])*len(x[0]) for x in commons)
-    lc1 = math.sqrt(len2)/len(s)
-    lc2 = math.sqrt(len2)/len(t)
-    lengthCover = math.pow(lc1, w_s)*math.pow(lc2, 1-w_s)
-
-    c = [x for y in commons for x in y[0]]
-    che_s = sum(countTerm(x) for x in s)
-    che_t = sum(countTerm(x) for x in t)
-    che_c = sum(countTerm(x) for x in c)
-
-    ec1 = che_c/che_s
-    ec2 = che_c/che_t
-    cheCover = math.pow(ec1, w_s)*math.pow(ec2, 1-w_s)
-    simularity = w_che*cheCover+(1-w_che)*lengthCover
-    return simularity
 
 
 if __name__ == "__main__":
@@ -285,7 +251,6 @@ if __name__ == "__main__":
 
     # [(['Software', 'Engineering'], 14, 5)]
     print(lcs1(doc[1], doc[2]))
-    print(getSimularity(doc[1], doc[2]))  # 0.39355199883902836
     # [([':'], 1), (['on'], 4), (['Software'], 6)]
     print(lcs2(doc[0], doc[1:4]))
 
@@ -298,13 +263,12 @@ if __name__ == "__main__":
     doc = poet.split()
     # [(['何', '人'], 2, 5), (['江', '月'], 7, 2)]
     print(lcs1(doc[1], doc[3]))
-    print(getSimularity(doc[1], doc[3]))  # 0.3884714952984324
     # [(['江', '月'], 7)]
     print(lcs2(doc[2], doc[2:4]))
 
     # [(['江'], 0, 10), (['何', '人'], 2, 5), (['见'], 5, 8), (['江', '月'], 7, 2)]
     print(lcs1(doc[1], doc[3], 1))
+    print(lcs2("布架 拖把抹布悬挂沥水洁具架 ", ["抹布架"], 1))
     # [(['人'], 0), (['江', '月'], 7)]
     print(lcs2(doc[2], doc[2:4], 1))
 
-    print(getSimularity("大话西游", "大话西游手游"))  # 0.8513286423569945
