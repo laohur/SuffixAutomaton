@@ -17,7 +17,7 @@ setup(
     name="SuffixAutomaton",
     # packages=find_packages(),
     py_modules=['SuffixAutomaton'],
-    version='0.0.7',
+    version='0.0.8',
     description='suffix automaton by words, to get text common substrings',
     long_description=long_description,
     long_description_content_type="text/markdown",

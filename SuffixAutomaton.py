@@ -116,7 +116,7 @@ class SuffixAutomaton:
         return t, start
 
 
-def sam_lcs1(sam: SuffixAutomaton, t: List[str], min_len: int):
+def sam_lcs1(sam: SuffixAutomaton, t: List[str], min_len: int = -1):
     p = 0  # 当前节点
     length = 0  # 当前
     longest = 0  # 全局
