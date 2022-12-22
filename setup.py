@@ -4,8 +4,8 @@ from setuptools import setup, find_packages
 from os import path
 import os
 
-packages = find_packages('.')
-print(packages)
+# packages = find_packages('.')
+# print(packages)
 
 here = os.path.abspath(os.path.dirname(__file__))
 
@@ -17,7 +17,7 @@ setup(
     name="SuffixAutomaton",
     # packages=find_packages(),
     py_modules=['SuffixAutomaton'],
-    version='0.0.8',
+    version='0.0.9',
     description='suffix automaton by words, to get text common substrings',
     long_description=long_description,
     long_description_content_type="text/markdown",

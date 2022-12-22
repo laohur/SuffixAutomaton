@@ -12,7 +12,7 @@ logger.setLevel(level=logging.INFO)
 handler = logging.StreamHandler()
 handler.setLevel(logging.INFO)
 formatter = logging.Formatter(
-    '%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    '%(asctime)s- %(filename)s - %(lineno)d - %(name)s - %(levelname)s - %(message)s')
 handler.setFormatter(formatter)
 logger.addHandler(handler)
 
@@ -115,46 +115,79 @@ class SuffixAutomaton:
         t = self.sequence[start: pos+1]
         return t, start
 
+    def lcs1(self, t: List[str], min_len: int = -1):
+        p = 0  # 当前节点
+        length = 0  # 当前
+        longest = 0  # 全局
+        cands = [None]*len(self.nodes)  # 候选
+        for i, x in enumerate(t):
+            if x in self.nodes[p].next:  # 匹配
+                cands[p] = None
+                p = self.nodes[p].next[x]
+                length += 1
+            else:  # 失配
+                while p != -1 and x not in self.nodes[p].next:
+                    p = self.nodes[p].link
+                if p == -1:  # 从头再来
+                    p = 0
+                    length = 0
+                else:  # 止步
+                    length = self.nodes[p].length+1
+                    cands[p] = None
+                    p = self.nodes[p].next[x]
+            if length > 0:
+                longest = max(longest, length)
+                endpos = p
+                cand_start = i-length+1
+                if cands[p] and cands[p][1] >= length:
+                    continue
+                cands[p] = (endpos, length, cand_start)
+
+        if min_len <= 0:
+            min_len = max(1, longest)
+        cands = [x for x in cands if x]
+        ans = []
+        for endpos, length, cand_start in cands:
+            if length >= min_len:
+                (t, start) = self.sub_seq(endpos, length)
+                if ans and start <= ans[-1][1]:
+                    ans[-1] = (t, start, cand_start)
+                else:
+                    ans.append((t, start, cand_start))
+        return ans
+
+    def lcs2(self, doc: List[List[str]], min_len: int = -1):
+        # 计数排序 https://www.cnblogs.com/xiaochuan94/p/11198610.html
+        # 按照可能匹配串的长度降序，匹配成功向上传递，用以优化效率
+        # count = [0]*(len(self.sequence)+1)
+        count = [0]*self.size
+        for i in range(1, self.size):
+            count[self.nodes[i].length] += 1
+        for i in range(1, len(count)):
+            count[i] += count[i-1]
+        result = [0]*self.size
+        for i in range(self.size-1, 0, -1):
+            result[count[self.nodes[i].length]] = i
+            count[self.nodes[i].length] -= 1
+        lengths = [x.length for x in self.nodes]  # 起始该节点全匹配
+        for t in doc:
+            result, lengths = match(self, t, result, lengths)
+
+        longest = max(lengths)
+        if min_len <= 0:
+            min_len = max(1, longest)
+        ans = []
+        for endpos, length in enumerate(lengths):
+            if length >= min_len:
+                (t, start) = self.sub_seq(endpos, length)
+                if ans and start <= ans[-1][1]:
+                    ans[-1] = (t, start)
+                else:
+                    ans.append((t, start))
+        return ans
 
 def sam_lcs1(sam: SuffixAutomaton, t: List[str], min_len: int = -1):
-    p = 0  # 当前节点
-    length = 0  # 当前
-    longest = 0  # 全局
-    cands = [None]*len(sam.nodes)  # 候选
-    for i, x in enumerate(t):
-        if x in sam.nodes[p].next:  # 匹配
-            cands[p] = None
-            p = sam.nodes[p].next[x]
-            length += 1
-        else:  # 失配
-            while p != -1 and x not in sam.nodes[p].next:
-                p = sam.nodes[p].link
-            if p == -1:  # 从头再来
-                p = 0
-                length = 0
-            else:  # 止步
-                length = sam.nodes[p].length+1
-                cands[p] = None
-                p = sam.nodes[p].next[x]
-        if length > 0:
-            longest = max(longest, length)
-            endpos = p
-            cand_start = i-length+1
-            if cands[p] and cands[p][1] >= length:
-                continue
-            cands[p] = (endpos, length, cand_start)
-    if min_len <= 0:
-        min_len = max(1, longest)
-    cands = [x for x in cands if x]
-    ans = []
-    for endpos, length, cand_start in cands:
-        if length >= min_len:
-            (t, start) = sam.sub_seq(endpos, length)
-            if ans and start<=ans[-1][1]:
-                ans[-1] = (t, start, cand_start)
-            else:
-                ans.append((t, start, cand_start))
-    return ans
+    return sam.lcs1(t,min_len)
 
 
 def lcs1(s: List[str], t: List[str], min_len: int = -1):
@@ -181,6 +214,7 @@ def match(sam, t, result, lengths):
                 now[p] = max(tmp, now[p])
             else:  # 从头再来
                 tmp = p = 0
+
     for i in range(sam.size-1, 0, -1):
         v = result[i]
         fa = sam.nodes[v].link
@@ -192,33 +226,7 @@ def match(sam, t, result, lengths):
 
 
 def sam_lcs2(sam: SuffixAutomaton, doc: List[List[str]], min_len: int = -1):
-    # 计数排序 https://www.cnblogs.com/xiaochuan94/p/11198610.html
-    # 按照可能匹配串的长度降序，匹配成功向上传递，用以优化效率
-    # count = [0]*(len(sam.sequence)+1)
-    count = [0]*sam.size
-    for i in range(1, sam.size):
-        count[sam.nodes[i].length] += 1
-    for i in range(1, len(count)):
-        count[i] += count[i-1]
-    result = [0]*sam.size
-    for i in range(sam.size-1, 0, -1):
-        result[count[sam.nodes[i].length]] = i
-        count[sam.nodes[i].length] -= 1
-    lengths = [x.length for x in sam.nodes]  # 起始该节点全匹配
-    for t in doc:
-        result, lengths = match(sam, t, result, lengths)
-    longest = max(lengths)
-    if min_len <= 0:
-        min_len = max(1, longest)
-    ans = []
-    for endpos, length in enumerate(lengths):
-        if length >= min_len:
-            (t, start) = sam.sub_seq(endpos, length)
-            if ans and start<=ans[-1][1]:
-                ans[-1] = (t, start)
-            else:
-                ans.append((t, start))
-    return ans
+    return sam.lcs2(doc,min_len)
 
 
 def lcs2(query: List[str], doc: List[List[str]], min_len: int = -1):
@@ -245,31 +253,30 @@ if __name__ == "__main__":
     doc = [x.split() for x in doc]
 
     # sam1 = SAM(doc[2])
-    # print(sam1)
+    # logger.info(sam1)
     # sam2 = SAM(s2)
-    # print(sam2)
-    # print(sam_lcs1(sam1, s2))
+    # logger.info(sam2)
+    # logger.info(sam_lcs1(sam1, s2))
 
     # [(['Software', 'Engineering'], 14, 5)]
-    print(lcs1(doc[1], doc[2]))
+    logger.info(lcs1(doc[1], doc[2]))
     # [([':'], 1), (['on'], 4), (['Software'], 6)]
-    print(lcs2(doc[0], doc[1:4]))
+    logger.info(lcs2(doc[0], doc[1:4]))
 
     # [([':'], 1, 1), (['Conference'], 7, 3), (['on'], 10, 4), (['Software', 'Engineering'], 14, 5)]
-    print(lcs1(doc[1], doc[2], 1))
+    logger.info(lcs1(doc[1], doc[2], 1))
     # [([':'], 1), (['on'], 4), (['Software'], 6)]
-    print(lcs2(doc[0], doc[1:4], 1))
+    logger.info(lcs2(doc[0], doc[1:4], 1))
 
     poet = "江天一色无纤尘皎皎空中孤月轮 江畔何人初见月江月何年初照人 人生代代无穷已江月年年望相似 不知江月待何人但见长江送流水"
     doc = poet.split()
     # [(['何', '人'], 2, 5), (['江', '月'], 7, 2)]
-    print(lcs1(doc[1], doc[3]))
+    logger.info(lcs1(doc[1], doc[3]))
     # [(['江', '月'], 7)]
-    print(lcs2(doc[2], doc[2:4]))
+    logger.info(lcs2(doc[2], doc[2:4]))
 
     # [(['江'], 0, 10), (['何', '人'], 2, 5), (['见'], 5, 8), (['江', '月'], 7, 2)]
-    print(lcs1(doc[1], doc[3], 1))
-    print(lcs2("布架 拖把抹布悬挂沥水洁具架 ", ["抹布架"], 1))
+    logger.info(lcs1(doc[1], doc[3], 1))
+    logger.info(lcs2("布架 拖把抹布悬挂沥水洁具架 ", ["抹布架"], 1))
     # [(['人'], 0), (['江', '月'], 7)]
-    print(lcs2(doc[2], doc[2:4], 1))
-
+    logger.info(lcs2(doc[2], doc[2:4], 1))
