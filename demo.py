@@ -1,11 +1,3 @@
-
-# SuffixAutomaton 后缀自动机
-find LCS (longest common substrings) by suffix automaton 
-
-## usage
-> pip install SuffixAutomaton 
-
-```python
 from SuffixAutomaton import SuffixAutomaton,lcs1,lcs2
 raw = """
 ASE : International Conference on Automated Software Engineering
@@ -46,17 +38,3 @@ for x in doc[1:]:
 
 # lcs() -> [(str, start, cand_start)], sort in length decending. may overlap. 
 print(lcs2("布架 拖把抹布悬挂沥水洁具架 ", ["抹布架"], 1))  # [('布架', 0), ('抹布', 5), ('架', 13)]
-```
-
-## feature
-* suffix automaton [in words] 可分词后缀自动机
-* [Longest] Common Substring of two lines 两文[最长]共串
-* [Longest] Common Substring of document 多文[最长]共串
-
-
-## inspired by 
-    参照：https://www.cnblogs.com/shld/p/10444808.html
-    讲解：https://www.cnblogs.com/zjp-shadow/p/9218214.html
-    详解：https://www.cnblogs.com/1625--H/p/12416198.html
-    证明：https://oi-wiki.org/string/sam/
-    题解：https://www.cnblogs.com/Lyush/archive/2013/08/25/3281546.html https://www.cnblogs.com/mollnn/p/13175736.html

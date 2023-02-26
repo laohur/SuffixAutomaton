@@ -4,15 +4,16 @@ import copy
 from typing import List, Dict, OrderedDict
 
 import logging
-logger = logging.getLogger("SuffixAutomaton")
+# logger = logging.getLogger("SuffixAutomaton")
+logger = logging.getLogger()
 logger.propagate = False
 logger.handlers.clear()
 logger.setLevel(level=logging.INFO)
 # handler = logging.FileHandler("log.txt")
 handler = logging.StreamHandler()
 handler.setLevel(logging.INFO)
-formatter = logging.Formatter(
-    '%(asctime)s- %(filename)s - %(lineno)d - %(name)s - %(levelname)s - %(message)s')
+# formatter = logging.Formatter('%(asctime)s- %(filename)s - %(lineno)d - %(name)s - %(levelname)s - %(message)s')
+formatter = logging.Formatter('%(asctime)s- %(filename)s - %(lineno)d - %(levelname)s - %(message)s')
 handler.setFormatter(formatter)
 logger.addHandler(handler)
 
@@ -116,6 +117,9 @@ class SuffixAutomaton:
         return t, start
 
     def lcs1(self, t: List[str], min_len: int = -1):
+        """
+        return [(str, start, cand_start)]
+        """
         p = 0  # 当前节点
         length = 0  # 当前
         longest = 0  # 全局
@@ -248,35 +252,32 @@ if __name__ == "__main__":
     POPL : ACM SIGACT-SIGPLAN Symposium on Principles of Programming Languages
     SOSP : ACM Symposium on Operating Systems Principles
     """
-    doc = raw.splitlines()
-    doc = [x for x in doc if x]
+    doc = raw.strip().splitlines()
     doc = [x.split() for x in doc]
+    # for tokens
+    logger.info(lcs1(doc[1], doc[2]))  # [(['Software', 'Engineering'], 14, 5)]
+    logger.info(lcs2(doc[0], doc[1:4]))  # [([':'], 1), (['on'], 4), (['Software'], 6)]
+    logger.info(lcs1(doc[1], doc[2], 1)) # [([':'], 1, 1), (['Conference'], 7, 3), (['on'], 10, 4), (['Software', 'Engineering'], 14, 5)]
+    logger.info(lcs2(doc[0], doc[1:4], 1)) # [([':'], 1), (['on'], 4), (['Software'], 6)]
 
-    # sam1 = SAM(doc[2])
-    # logger.info(sam1)
-    # sam2 = SAM(s2)
-    # logger.info(sam2)
-    # logger.info(sam_lcs1(sam1, s2))
-
-    # [(['Software', 'Engineering'], 14, 5)]
-    logger.info(lcs1(doc[1], doc[2]))
-    # [([':'], 1), (['on'], 4), (['Software'], 6)]
-    logger.info(lcs2(doc[0], doc[1:4]))
-
-    # [([':'], 1, 1), (['Conference'], 7, 3), (['on'], 10, 4), (['Software', 'Engineering'], 14, 5)]
-    logger.info(lcs1(doc[1], doc[2], 1))
-    # [([':'], 1), (['on'], 4), (['Software'], 6)]
-    logger.info(lcs2(doc[0], doc[1:4], 1))
-
+    # for chars
     poet = "江天一色无纤尘皎皎空中孤月轮 江畔何人初见月江月何年初照人 人生代代无穷已江月年年望相似 不知江月待何人但见长江送流水"
-    doc = poet.split()
-    # [(['何', '人'], 2, 5), (['江', '月'], 7, 2)]
-    logger.info(lcs1(doc[1], doc[3]))
-    # [(['江', '月'], 7)]
-    logger.info(lcs2(doc[2], doc[2:4]))
+    doc = poet.split()   
+    logger.info(lcs1(doc[1], doc[3]))  #  [('何人', 2, 5), ('江月', 7, 2)]
+    logger.info(lcs1(doc[1], doc[3], 1)) # [('江', 0, 10), ('何人', 2, 5), ('见', 5, 8), ('江月', 7, 2)]
+    # for lcs of doc
+    logger.info(lcs2(doc[2], doc[2:4]))  # [('江月', 7)]
+    logger.info(lcs2(doc[2], doc[2:4], 1)) # [('人', 0), ('江月', 7)]
+    # faster when iterally
+    sam=SuffixAutomaton(doc[0])
+    for x in doc[1:]:
+        print((x,sam.lcs1(x)))
+    """
+    ('江畔何人初见月江月何年初照人', [('江', 0, 0), ('月', 12, 6)])
+    ('人生代代无穷已江月年年望相似', [('江', 0, 7), ('无', 4, 4), ('月', 12, 8)])
+    ('不知江月待何人但见长江送流水', [('江', 0, 2), ('月', 12, 3)])
+    """
 
-    # [(['江'], 0, 10), (['何', '人'], 2, 5), (['见'], 5, 8), (['江', '月'], 7, 2)]
-    logger.info(lcs1(doc[1], doc[3], 1))
-    logger.info(lcs2("布架 拖把抹布悬挂沥水洁具架 ", ["抹布架"], 1))
-    # [(['人'], 0), (['江', '月'], 7)]
-    logger.info(lcs2(doc[2], doc[2:4], 1))
+    # lcs() -> [(str, start, cand_start)], sort in length decending. may overlap. 
+    logger.info(lcs2("布架 拖把抹布悬挂沥水洁具架 ", ["抹布架"], 1))  # [('布架', 0), ('抹布', 5), ('架', 13)]
+    
