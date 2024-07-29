@@ -1,4 +1,5 @@
-from SuffixAutomaton import SuffixAutomaton,lcs1,lcs2
+from SuffixAutomaton import SuffixAutomaton, lcs1, lcs2, logger
+
 raw = """
 ASE : International Conference on Automated Software Engineering
 ESEC/FSE : ACM Joint European Software Engineering Conference and Symposium on the Foundations of Software Engineering
@@ -13,28 +14,29 @@ SOSP : ACM Symposium on Operating Systems Principles
 doc = raw.strip().splitlines()
 doc = [x.split() for x in doc]
 # for tokens
-print(lcs1(doc[1], doc[2]))  # [(['Software', 'Engineering'], 14, 5)]
-print(lcs2(doc[0], doc[1:4]))  # [([':'], 1), (['on'], 4), (['Software'], 6)]
-print(lcs1(doc[1], doc[2], 1)) # [([':'], 1, 1), (['Conference'], 7, 3), (['on'], 10, 4), (['Software', 'Engineering'], 14, 5)]
-print(lcs2(doc[0], doc[1:4], 1)) # [([':'], 1), (['on'], 4), (['Software'], 6)]
+logger.info(lcs1(doc[1], doc[2]))  # [(14, 2, 5, ['Software', 'Engineering'])]
+logger.info(lcs2(doc[0], doc[1:4]))  # [(1, 1, [':']), (4, 1, ['on']), (6, 1, ['Software'])]
+logger.info(lcs1(doc[1], doc[2], 1)) # [(1, 1, 1, [':']), (7, 1, 3, ['Conference']), (10, 1, 4, ['on']), (14, 2, 5, ['Software', 'Engineering'])]
+logger.info(lcs2(doc[0], doc[1:4], 1)) # [(1, 1, [':']), (4, 1, ['on']), (6, 1, ['Software'])]
+logger.info(lcs2(doc[0], doc[1:4], 1, output_lcs=False)) # [(1, 1, None), (4, 1, None), (6, 1, None)]
 
 # for chars
 poet = "江天一色无纤尘皎皎空中孤月轮 江畔何人初见月江月何年初照人 人生代代无穷已江月年年望相似 不知江月待何人但见长江送流水"
 doc = poet.split()   
-print(lcs1(doc[1], doc[3]))  #  [('何人', 2, 5), ('江月', 7, 2)]
-print(lcs1(doc[1], doc[3], 1)) # [('江', 0, 10), ('何人', 2, 5), ('见', 5, 8), ('江月', 7, 2)]
+logger.info(lcs1(doc[1], doc[3]))  #  [(2, 2, 5, '何人'), (7, 2, 2, '江月')]
+logger.info(lcs1(doc[1], doc[3], 1)) # [(0, 1, 10, '江'), (2, 2, 5, '何人'), (5, 1, 8, '见'), (7, 2, 2, '江月')]
 # for lcs of doc
-print(lcs2(doc[2], doc[2:4]))  # [('江月', 7)]
-print(lcs2(doc[2], doc[2:4], 1)) # [('人', 0), ('江月', 7)]
+logger.info(lcs2(doc[2], doc[2:4]))  # [(7, 2, '江月')]
+logger.info(lcs2(doc[2], doc[2:4], 1)) # [(0, 1, '人'), (7, 2, '江月')]
 # faster when iterally
-sam=SuffixAutomaton(doc[0])
+sam = SuffixAutomaton(doc[0])
 for x in doc[1:]:
-    print((x,sam.lcs1(x)))
+    print((x, sam.lcs1(x)))
 """
-('江畔何人初见月江月何年初照人', [('江', 0, 0), ('月', 12, 6)])
-('人生代代无穷已江月年年望相似', [('江', 0, 7), ('无', 4, 4), ('月', 12, 8)])
-('不知江月待何人但见长江送流水', [('江', 0, 2), ('月', 12, 3)])
+('江畔何人初见月江月何年初照人', [(0, 1, 0, '江'), (12, 1, 6, '月')])
+('人生代代无穷已江月年年望相似', [(0, 1, 7, '江'), (4, 1, 4, '无'), (12, 1, 8, '月')])
+('不知江月待何人但见长江送流水', [(0, 1, 2, '江'), (12, 1, 3, '月')])
 """
 
-# lcs() -> [(str, start, cand_start)], sort in length decending. may overlap. 
-print(lcs2("布架 拖把抹布悬挂沥水洁具架 ", ["抹布架"], 1))  # [('布架', 0), ('抹布', 5), ('架', 13)]
+# lcs() -> [(str, start, cand_start)], sort in length decending. may overlap.
+logger.info(lcs2("布架 拖把抹布悬挂沥水洁具架 ", ["抹布架"], 1))  # [(0, 2, '布架'), (5, 2, '抹布'), (13, 1, '架')]
