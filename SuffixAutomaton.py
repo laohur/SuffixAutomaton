@@ -173,7 +173,7 @@ class SuffixAutomaton:
         for endpos, length, cand_start in cands:
             if length >= min_len:
                 (start, T) = self.sub_seq(endpos, length, output_lcs)
-                if ans and start <= ans[-1][1]:
+                if ans and start <= ans[-1][0]:
                     ans[-1] = (start, length, cand_start, T)
                 else:
                     ans.append((start, length, cand_start, T))
