@@ -136,7 +136,7 @@ class SuffixAutomaton:
 
     def lcs1(self, t: List[str], min_len: int = -1, output_lcs=True):
         """
-        return [(lcs:str, start:int, cand_start:int)]
+        return [(start:int, length:int, cand_start:int, lcs:str)]
         default min_len=-1, then return longest one
         """
         p = 0  # 当前节点
@@ -181,7 +181,7 @@ class SuffixAutomaton:
 
     def lcs2(self, doc: List[List[str]], min_len: int = -1, output_lcs=True):
         """
-        return [(lcs:str, start:int, cand_start:int)]
+        return [(start:int, length:int, lcs:str)]
         default min_len=-1, then return longest one
 
         # 计数排序 https://www.cnblogs.com/xiaochuan94/p/11198610.html
